@@ -7,6 +7,7 @@ import (
 
 	"github.com/SimonRichardson/foodhygiene/pkg/service"
 	"github.com/go-kit/kit/log"
+	"github.com/pkg/errors"
 )
 
 // These are the query API URL paths.
@@ -59,7 +60,9 @@ func (a *API) handleAuthorities(w http.ResponseWriter, r *http.Request) {
 	// Get the authorities from the service
 	authorities, err := a.service.Authorities()
 	if err != nil {
-		JSONError(w, err.Error(), http.StatusInternalServerError)
+		// Wrap the error request, so that we're more specific
+		e := errors.Wrap(err, "error requesting authorities")
+		JSONError(w, e.Error(), http.StatusInternalServerError)
 		return
 	}
 
