@@ -2,7 +2,10 @@ package query
 
 import (
 	"net/http"
+	"strings"
+	"time"
 
+	"github.com/SimonRichardson/foodhygiene/pkg/service"
 	"github.com/go-kit/kit/log"
 )
 
@@ -14,13 +17,15 @@ const (
 
 // API serves the query API
 type API struct {
-	logger log.Logger
+	service *service.Service
+	logger  log.Logger
 }
 
 // NewAPI creates a API with correct dependencies.
-func NewAPI(logger log.Logger) *API {
+func NewAPI(service *service.Service, logger log.Logger) *API {
 	return &API{
-		logger: logger,
+		service: service,
+		logger:  logger,
 	}
 }
 
@@ -40,11 +45,40 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) handleAuthorities(w http.ResponseWriter, r *http.Request) {
+	// useful metrics
+	begin := time.Now()
 
+	defer r.Body.Close()
+
+	// Let's guard against invalid content-types
+	if !validContentType(r) {
+		JSONError(w, "invalid content type", http.StatusBadRequest)
+		return
+	}
+
+	// Get the authorities from the service
+	authorities, err := a.service.Authorities()
+	if err != nil {
+		JSONError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// AuthoritiesResult prints out the json
+	qr := AuthoritiesResult{
+		Duration: time.Since(begin).String(),
+		Records:  authorities,
+	}
+	qr.EncodeTo(w)
 }
 
 func (a *API) handleEstablishments(w http.ResponseWriter, r *http.Request) {
 
+}
+
+// Validate the header content-type.
+func validContentType(r *http.Request) bool {
+	t := r.Header.Get("Content-Type")
+	return strings.Contains(t, "application/json")
 }
 
 type interceptingWriter struct {

@@ -8,9 +8,19 @@ import (
 	"os"
 
 	"github.com/SimonRichardson/foodhygiene/pkg/query"
+	"github.com/SimonRichardson/foodhygiene/pkg/service"
 	"github.com/SimonRichardson/foodhygiene/pkg/ui"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+)
+
+const (
+	// APIRatingsFoodVersion states which api version should be used for
+	// http://api.ratings.food.gov.uk
+	APIRatingsFoodVersion = 2
+
+	// APIRatingsFoodURL states which url should be used for accessing the API
+	APIRatingsFoodURL = "http://api.ratings.food.gov.uk"
 )
 
 // runQuery creates all the dependencies required to create and run the query
@@ -58,7 +68,8 @@ func runQuery(args []string) error {
 	defer apiListener.Close()
 
 	// API that is going to handle the incoming requests.
-	api := query.NewAPI(log.With(logger, "component", "api"))
+	service := service.New(APIRatingsFoodURL, APIRatingsFoodVersion, log.With(logger, "component", "service"))
+	api := query.NewAPI(service, log.With(logger, "component", "api"))
 
 	mux := http.NewServeMux()
 	mux.Handle("/query/", http.StripPrefix("/query", api))
