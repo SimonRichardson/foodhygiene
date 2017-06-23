@@ -18,12 +18,12 @@ const (
 
 // API serves the query API
 type API struct {
-	service *service.Service
+	service service.Service
 	logger  log.Logger
 }
 
 // NewAPI creates a API with correct dependencies.
-func NewAPI(service *service.Service, logger log.Logger) *API {
+func NewAPI(service service.Service, logger log.Logger) *API {
 	return &API{
 		service: service,
 		logger:  logger,

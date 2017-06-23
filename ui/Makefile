@@ -1,9 +1,12 @@
-all: index.html
+all: node_modules dist/index.html
 
-index.html:
-	touch index.html
+node_modules:
+	yarn install
+
+dist/index.html:
+	./node_modules/.bin/webpack --progress -p
 
 clean: FORCE
-	rm -f index.html
+	rm -rf dist
 
 FORCE:

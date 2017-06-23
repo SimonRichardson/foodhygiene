@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/go-kit/kit/log"
 )
 
 const (
@@ -20,13 +22,14 @@ type realService struct {
 	base    string
 	version int
 	client  *http.Client
+	logger  log.Logger
 }
 
 // New creates a Service from a base url and the API version to use for the
 // underlying service.
 // Note: if a version is not supplied with the request then calls to the API
 // endpoints will return no data.
-func New(base string, version int) Service {
+func New(base string, version int, logger log.Logger) Service {
 	// Create a new http client, so we can handle timeouts in a more granular
 	// manor.
 	client := &http.Client{
@@ -43,11 +46,16 @@ func New(base string, version int) Service {
 		},
 	}
 	// Return the service.
-	return &realService{base, version, client}
+	return &realService{
+		base:    base,
+		version: version,
+		client:  client,
+		logger:  logger,
+	}
 }
 
-// Authority returns a list of Authority from the underlying API service.
-// Note: an error is returned if a parse error is encountered.
+// Authorities returns a series of Authorities from the underlying API or it
+// returns an error if it was not able to request or parse the result.
 func (s *realService) Authorities() ([]Authority, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/Authorities", s.base), nil)
 	if err != nil {
@@ -71,4 +79,12 @@ func (s *realService) Authorities() ([]Authority, error) {
 	}
 
 	return res, nil
+}
+
+// EstablishmentsForAuthority returns a series of Establishments from the
+// underlying API or it returns an error if it was not able to request or
+// parse the result. The Establishments service API takes a Authority
+// LocalID to select the correct set of establishments for that Authority.
+func (s *realService) EstablishmentsForAuthority(id string) ([]Establishment, error) {
+	return nil, nil
 }

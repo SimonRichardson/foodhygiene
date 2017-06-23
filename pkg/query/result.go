@@ -10,7 +10,7 @@ import (
 // AuthoritiesResult outputs the authorities from the food hygiene service
 type AuthoritiesResult struct {
 	Duration string
-	Records  []service.Authorities
+	Records  []service.Authority
 }
 
 // EncodeTo encodes the AuthoritiesResult to the HTTP response writer.

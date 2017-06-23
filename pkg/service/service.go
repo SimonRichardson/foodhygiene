@@ -12,9 +12,11 @@ type Service interface {
 	// returns an error if it was not able to request or parse the result.
 	Authorities() ([]Authority, error)
 
-	// Establishments returns a series of Establishments from the underlying API
-	// or it returns an error if it was not able to request or parse the result.
-	Establishments(string) ([]Establishment, error)
+	// EstablishmentsForAuthority returns a series of Establishments from the
+	// underlying API or it returns an error if it was not able to request or
+	// parse the result. The Establishments service API takes a Authority
+	// LocalID to select the correct set of establishments for that Authority.
+	EstablishmentsForAuthority(string) ([]Establishment, error)
 }
 
 // Authority defines a schema for the JSON from the service
