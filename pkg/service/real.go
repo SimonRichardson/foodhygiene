@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	defaultHeaderTimeout = 5 * time.Second
-	defaultTimeout       = 10 * time.Second
+	defaultHeaderTimeout = 10 * time.Second
+	defaultTimeout       = 25 * time.Second
 	defaultKeepAlive     = 30 * time.Second
 )
 

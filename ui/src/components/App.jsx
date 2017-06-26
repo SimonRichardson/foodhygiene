@@ -41,7 +41,6 @@ export default class App extends React.Component {
                 if (res.ok) {
                     return res.json();
                 }
-                console.log(res);
                 throw new Error('Invalid response - ' + res.statusText);
             })
             .then(res =>  this.setState(Object.assign(this.state, { authorities: res })))
@@ -68,10 +67,10 @@ export default class App extends React.Component {
                 if (res.ok) {
                     return res.json();
                 }
-                throw new Error('Invalid response for ' + event.localId);
+                throw new Error('Invalid response for ' + event.localId + ' - ' + res.statusText);
             })
             .then(res => this.setState(Object.assign(this.state, { ratings: res })))
-            .catch(err => this.setState(Object.assign(this.state, { ratings: [] })))
+            .catch(err => this.setState(Object.assign(this.state, { error: err.toString(), ratings: [] })))
             .then(res => {
                 // State when everything is loaded
                 const loaded = Object.assign(this.state.loaded, { table: true });
