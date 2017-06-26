@@ -35,7 +35,7 @@ func (r *AuthoritiesResult) EncodeTo(w http.ResponseWriter) {
 // EstablishmentsResult outputs the ratings for a given authority establishments
 // from the food hygiene service
 type EstablishmentsResult struct {
-	LocalID  string
+	Params   EstablishmentsQueryParams
 	Duration string
 	Records  []Rating
 }
@@ -44,13 +44,13 @@ type EstablishmentsResult struct {
 // Note: if the records can't be encoded then panic, so we don't fail silently.
 func (r *EstablishmentsResult) EncodeTo(w http.ResponseWriter) {
 	w.Header().Set(httpHeaderDuration, r.Duration)
-	w.Header().Set(httpHeaderLocalID, r.LocalID)
+	w.Header().Set(httpHeaderLocalID, r.Params.LocalID)
 
 	records := make([]OutputRating, len(r.Records))
 	for k, v := range r.Records {
 		records[k] = OutputRating{
 			Name:   v.Name,
-			Rating: fmt.Sprintf("%f%s", v.Rating, "%"),
+			Rating: fmt.Sprintf("%.2f%s", v.Rating, "%"),
 		}
 	}
 
@@ -76,3 +76,10 @@ type OutputRating struct {
 	Name   string `json:"name"`
 	Rating string `json:"rating"`
 }
+
+type queryBehavior int
+
+const (
+	queryRequired queryBehavior = iota
+	queryOptional
+)

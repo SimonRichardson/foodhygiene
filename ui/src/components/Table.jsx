@@ -7,11 +7,11 @@ export default class Table extends React.Component {
         }
 
         return (
-            <table>
+            <table style={{textAlign: 'left', width: '400px', margin: 'auto', border: '1px solid #c1c1c1'}}>
                 <thead>
                     <tr>
                         <th>Rating</th>
-                        <th>Percentage</th>
+                        <th style={{textAlign: 'right'}}>Percentage</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -19,7 +19,7 @@ export default class Table extends React.Component {
                         this.props.data.map((rating, i) =>
                             <tr key={i}>
                                 <td>{rating.name}</td>
-                                <td>{rating.rating}</td>
+                                <td style={{textAlign: 'right'}}>{rating.rating}</td>
                             </tr>
                         )
                     }

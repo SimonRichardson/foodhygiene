@@ -30,12 +30,16 @@ func calculateRatings(establishments []service.Establishment) []Rating {
 	}
 
 	// Now convert them to percentages
-	ratings := make([]Rating, 0, len(values))
+	var (
+		i       int
+		ratings = make([]Rating, len(values))
+	)
 	for k, v := range values {
-		ratings = append(ratings, Rating{
-			Name:   nameRating(k),
-			Rating: float64(v) / float64(total),
-		})
+		ratings[i] = Rating{
+			Name:   ratingName(k),
+			Rating: (float64(v) / float64(total)) * 100,
+		}
+		i++
 	}
 
 	// Now let's make sure we sort them into some decent order
@@ -44,12 +48,12 @@ func calculateRatings(establishments []service.Establishment) []Rating {
 	return ratings
 }
 
-// nameRatings converts values into correctly expected rating values
-// i.e. "3" == "3-star" and "pass" == "Pass"
-func nameRating(name string) string {
+// ratingNames converts values into correctly expected rating values
+// i.e. "3" == "3-Star" and "pass" == "Pass"
+func ratingName(name string) string {
 	switch name {
 	case "1", "2", "3", "4", "5":
-		return fmt.Sprintf("%s-star", name)
+		return fmt.Sprintf("%s-Star", name)
 	default:
 		return strings.Title(name)
 	}

@@ -86,20 +86,16 @@ func (a *API) handleEstablishments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract the query local authority ID, if none is found, bail out as a
-	// bad request.
-	var (
-		query   = r.URL.Query()
-		localID = query.Get("local_id")
-	)
-	if strings.TrimSpace(localID) == "" {
-		JSONError(w, "no local authority ID", http.StatusBadRequest)
+	// Validate user input
+	var p EstablishmentsQueryParams
+	if err := p.DecodeFrom(r.URL, queryRequired); err != nil {
+		JSONError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	establishments, err := a.service.EstablishmentsForAuthority(localID)
+	establishments, err := a.service.EstablishmentsForAuthority(p.LocalID)
 	if err != nil {
-		e := errors.Wrapf(err, "error requesting establishments for authority %q", localID)
+		e := errors.Wrapf(err, "error requesting establishments for authority %q", p.LocalID)
 		JSONError(w, e.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -109,7 +105,7 @@ func (a *API) handleEstablishments(w http.ResponseWriter, r *http.Request) {
 
 	// EstablishmentsResult prints out the json
 	qr := EstablishmentsResult{
-		LocalID:  localID,
+		Params:   p,
 		Duration: time.Since(begin).String(),
 		Records:  ratings,
 	}

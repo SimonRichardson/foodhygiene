@@ -1,5 +1,5 @@
-hash: 30daceb71b0ee94925ba8047063c5cf4861a2d72f659654c68bc65a2ff749e59
-updated: 2017-06-23T10:48:35.295101252+01:00
+hash: 9a3f2c05ba1ff61d5262e3d082f89c72251307e3ea757c7c27b7d435bc3d573b
+updated: 2017-06-26T20:32:05.03449396+01:00
 imports:
 - name: github.com/go-kit/kit
   version: d67bb4c202e3b91377d1079b110a6c9ce23ab2f8
@@ -10,12 +10,12 @@ imports:
   version: 390ab7935ee28ec6b286364bba9b4dd6410cb3d5
 - name: github.com/go-stack/stack
   version: 7a2f19628aabfe68f0766b59e74d6315f8347d22
+- name: github.com/golang/mock
+  version: 93f6609a15b7de76bd49259f1f9a6b58df358936
+  subpackages:
+  - gomock
 - name: github.com/kr/logfmt
   version: b84e30acd515aadc4b783ad4ff83aff3299bdfe0
-- name: github.com/oklog/oklog
-  version: fca58330910eb7fe6267788eddf879b1d6811176
-  subpackages:
-  - pkg/ui
 - name: github.com/pkg/errors
   version: c605e284fe17294bda444b34710735b29d1a9d90
 testImports: []
