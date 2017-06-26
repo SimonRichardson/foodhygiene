@@ -18,8 +18,8 @@ export default class Table extends React.Component {
                     {
                         this.props.data.map((rating, i) =>
                             <tr key={i}>
+                                <td>{rating.name}</td>
                                 <td>{rating.rating}</td>
-                                <td>{rating.percent}</td>
                             </tr>
                         )
                     }

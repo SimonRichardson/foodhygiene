@@ -23,6 +23,10 @@ const (
 	APIRatingsFoodURL = "http://api.ratings.food.gov.uk"
 )
 
+const (
+	defaultCache = true
+)
+
 // runQuery creates all the dependencies required to create and run the query
 // end point for the cipher component.
 func runQuery(args []string) error {
@@ -31,6 +35,7 @@ func runQuery(args []string) error {
 
 		debug   = flagset.Bool("debug", false, "debug logging")
 		apiAddr = flagset.String("api", defaultAPIAddr, "listen address for ingest and store APIs")
+		cache   = flagset.Bool("cache", defaultCache, "use cached results for better responsiveness")
 		uiLocal = flagset.Bool("ui.local", false, "Ignores embedded files and goes straight to the filesystem")
 	)
 
@@ -67,9 +72,14 @@ func runQuery(args []string) error {
 	// Execution group.
 	defer apiListener.Close()
 
+	// Service wraps the food agency API
+	serv := service.New(APIRatingsFoodURL, APIRatingsFoodVersion, log.With(logger, "component", "service"))
+	if *cache {
+		serv = service.NewCache(serv)
+	}
+
 	// API that is going to handle the incoming requests.
-	service := service.New(APIRatingsFoodURL, APIRatingsFoodVersion, log.With(logger, "component", "service"))
-	api := query.NewAPI(service, log.With(logger, "component", "api"))
+	api := query.NewAPI(serv, log.With(logger, "component", "api"))
 
 	mux := http.NewServeMux()
 	mux.Handle("/query/", http.StripPrefix("/query", api))

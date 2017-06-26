@@ -75,7 +75,45 @@ func (a *API) handleAuthorities(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) handleEstablishments(w http.ResponseWriter, r *http.Request) {
+	// useful metrics
+	begin := time.Now()
 
+	defer r.Body.Close()
+
+	// Let's guard against invalid content-types
+	if !validContentType(r) {
+		JSONError(w, "invalid content type", http.StatusBadRequest)
+		return
+	}
+
+	// Extract the query local authority ID, if none is found, bail out as a
+	// bad request.
+	var (
+		query   = r.URL.Query()
+		localID = query.Get("local_id")
+	)
+	if strings.TrimSpace(localID) == "" {
+		JSONError(w, "no local authority ID", http.StatusBadRequest)
+		return
+	}
+
+	establishments, err := a.service.EstablishmentsForAuthority(localID)
+	if err != nil {
+		e := errors.Wrapf(err, "error requesting establishments for authority %q", localID)
+		JSONError(w, e.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Calculate the ratings of the whole establishments for the authority
+	ratings := calculateRatings(establishments)
+
+	// EstablishmentsResult prints out the json
+	qr := EstablishmentsResult{
+		LocalID:  localID,
+		Duration: time.Since(begin).String(),
+		Records:  ratings,
+	}
+	qr.EncodeTo(w)
 }
 
 // Validate the header content-type.
@@ -96,4 +134,5 @@ func (iw *interceptingWriter) WriteHeader(code int) {
 
 const (
 	httpHeaderDuration = "X-Proxy-Duration"
+	httpHeaderLocalID  = "X-Local-ID"
 )

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/log"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -57,13 +58,10 @@ func New(base string, version int, logger log.Logger) Service {
 // Authorities returns a series of Authorities from the underlying API or it
 // returns an error if it was not able to request or parse the result.
 func (s *realService) Authorities() ([]Authority, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/Authorities", s.base), nil)
+	req, err := s.newRequest("/Authorities")
 	if err != nil {
 		return nil, err
 	}
-
-	// Make sure we set the service API version, otherwise we get nothing.
-	req.Header.Set(serviceAPIVersion, strconv.Itoa(s.version))
 
 	resp, err := s.client.Do(req)
 	if err != nil {
@@ -71,6 +69,10 @@ func (s *realService) Authorities() ([]Authority, error) {
 	}
 
 	defer resp.Body.Close()
+
+	if code := resp.StatusCode; code < 200 || code >= 300 {
+		return nil, errors.Errorf("invalid request (status code: %d)", code)
+	}
 
 	// Parse out the errors
 	var res Authorities
@@ -86,5 +88,42 @@ func (s *realService) Authorities() ([]Authority, error) {
 // parse the result. The Establishments service API takes a Authority
 // LocalID to select the correct set of establishments for that Authority.
 func (s *realService) EstablishmentsForAuthority(id string) ([]Establishment, error) {
-	return nil, nil
+	req, err := s.newRequest(fmt.Sprintf("/Establishments?localAuthorityId=%s&pageSize=0", id))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if code := resp.StatusCode; code < 200 || code >= 300 {
+		return nil, errors.Errorf("invalid request (status code: %d)", code)
+	}
+
+	// Parse out the errors
+	var res Establishments
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+		return nil, err
+	}
+
+	return res.Establishments, nil
+}
+
+// newRequest makes sure that every request we send to the service has the
+// valid headers.
+func (s *realService) newRequest(url string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", s.base, url), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Make sure we set the service API version, otherwise we get nothing.
+	req.Header.Set(serviceAPIVersion, strconv.Itoa(s.version))
+	req.Header.Set(serviceContentType, contentType)
+
+	return req, err
 }

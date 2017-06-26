@@ -7,11 +7,14 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
 
-         this.state = {
+        this.headers = new Headers();
+        this.headers.set('content-type', 'application/json');
+
+        this.state = {
             loaded: false,
             authorities: [],
             ratings: []
-         };
+        };
 
         this.handleChange = this.handleChange.bind(this);
     }
@@ -20,11 +23,7 @@ export default class App extends React.Component {
         // When we mount, that's when we want to get the authorities from the
         // server. We make sure that the response is valid, if it's not then
         // we also handle that.
-        const headers = new Headers();
-        headers.set('content-type', 'application/json');
-
-        const init = { headers };
-        fetch(`/query/authorities`, init)
+        fetch('/query/authorities', { headers: this.headers })
             .then(res => {
                 if (res.ok) {
                     return res.json();
@@ -43,7 +42,15 @@ export default class App extends React.Component {
     }
 
     handleChange(event) {
-        console.log(event);
+        fetch('/query/establishments?local_id=' + event.localId, { headers: this.headers })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+                throw new Error('Invalid response for ' + event.localId);
+            })
+            .then(res => this.setState(Object.assign(this.state, { ratings: res })))
+            .catch(err => this.setState(Object.assign(this.state, { ratings: [] })));
     }
 
     render() {

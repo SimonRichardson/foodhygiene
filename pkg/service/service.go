@@ -1,7 +1,10 @@
 package service
 
 const (
-	serviceAPIVersion = "X-API-Version"
+	serviceAPIVersion  = "X-API-Version"
+	serviceContentType = "Content-Type"
+
+	contentType = "application/json"
 )
 
 // Service describes a service that talks to the underlying API
@@ -19,7 +22,7 @@ type Service interface {
 	EstablishmentsForAuthority(string) ([]Establishment, error)
 }
 
-// Authorities defines a schema for the JSON payload
+// Authorities defines a schema for the JSON payload we require
 type Authorities struct {
 	Authorities []Authority `json:"authorities"`
 }
@@ -29,6 +32,11 @@ type Authority struct {
 	Name               string `json:"Name"`
 	LocalID            int    `json:"LocalAuthorityId"`
 	EstablishmentCount int    `json:"EstablishmentCount"`
+}
+
+// Establishments defines a schema for the JSON payload we require
+type Establishments struct {
+	Establishments []Establishment `json:"establishments"`
 }
 
 // Establishment defines a schema for the JSON from the service
