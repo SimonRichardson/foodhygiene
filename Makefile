@@ -10,11 +10,14 @@ install:
 dist/hygiene:
 	go build -o dist/hygiene github.com/SimonRichardson/foodhygiene/cmd/hygiene
 
+.PHONY: build
+build: dist/hygiene
+
 .PHONY: build-ui
 build-ui: ui/dist/index.html pkg/ui/static.go
 
 pkg/ui/static.go:
-	esc -o="pkg/ui/static.go" -ignore=".babelrc|Makefile|src|package.json|webpack.config.js|yarn.lock" -pkg="ui" ui
+	esc -o="pkg/ui/static.go" -ignore=".babelrc|Makefile|node_modules|src|package.json|webpack.config.js|yarn.lock" -pkg="ui" ui
 
 ui/dist/index.html:
 	$(MAKE) -C ./ui

@@ -73,12 +73,12 @@ func (s *realService) Authorities() ([]Authority, error) {
 	defer resp.Body.Close()
 
 	// Parse out the errors
-	var res []Authority
+	var res Authorities
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	return res.Authorities, nil
 }
 
 // EstablishmentsForAuthority returns a series of Establishments from the

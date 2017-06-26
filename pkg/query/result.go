@@ -18,7 +18,26 @@ type AuthoritiesResult struct {
 func (r *AuthoritiesResult) EncodeTo(w http.ResponseWriter) {
 	w.Header().Set(httpHeaderDuration, r.Duration)
 
-	if err := json.NewEncoder(w).Encode(r.Records); err != nil {
+	records := make([]OutputAuthority, len(r.Records))
+	for k, v := range r.Records {
+		records[k] = OutputAuthority{
+			Name:    v.Name,
+			LocalID: v.LocalID,
+		}
+	}
+
+	if err := json.NewEncoder(w).Encode(records); err != nil {
 		panic(err)
 	}
+}
+
+// OutputAuthority is a normalized version of service.Authority. This exists
+// for a couple of reasons.
+// 1. The service.Authority payload is semantically confused when it comes to
+//  naming. See "authorties" vs "Name" for one example.
+// 2. There are some values which are not required for the UI, which helps
+//  reduce the size of the payload.
+type OutputAuthority struct {
+	Name    string `json:"name"`
+	LocalID int    `json:"local_id"`
 }

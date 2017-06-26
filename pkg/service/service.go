@@ -19,6 +19,11 @@ type Service interface {
 	EstablishmentsForAuthority(string) ([]Establishment, error)
 }
 
+// Authorities defines a schema for the JSON payload
+type Authorities struct {
+	Authorities []Authority `json:"authorities"`
+}
+
 // Authority defines a schema for the JSON from the service
 type Authority struct {
 	Name               string `json:"Name"`
