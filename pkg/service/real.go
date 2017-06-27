@@ -12,6 +12,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// These timeouts are required as some local authorities take some time to load,
+// so tweaking these can prevent a timeout on the client side.
 const (
 	defaultHeaderTimeout = 10 * time.Second
 	defaultTimeout       = 25 * time.Second
