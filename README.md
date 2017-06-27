@@ -49,6 +49,19 @@ The `pkg` directory is where all the CLI dependencies (libraries) are. This
 is the [current standard practice](https://peter.bourgon.org/go-best-practices-2016/#repository-structure)
 in go.
 
+Building the whole of the backend can be done with the following command:
+
+```
+make clean clean-ui build-ui build
+```
+
+If nothing has changed with in the ui and you're just rebuilding the backend CLI
+then the following command should suffice:
+
+```
+make clean build
+```
+
 #### Service
 
 With in the `pkg` directory you'll find a `service` module that wraps the
