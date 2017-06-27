@@ -129,6 +129,24 @@ manual testing.
 Of course more could be done, but with in the timeframe I personally think it's
 a promising start.
 
+#### Backend CLI Tests
+
+Because we're using `glide` - it offers us a quick helpful command to test
+everything:
+
+```
+go test -v $(glide nv)
+```
+
+#### Frontend Tests
+
+NPM also provides us with some quick helpful command to test components
+
+```
+cd ui
+npm test
+```
+
 ### Improvements
 
  1. The first page could be rendered server side, then all subsequent requests
